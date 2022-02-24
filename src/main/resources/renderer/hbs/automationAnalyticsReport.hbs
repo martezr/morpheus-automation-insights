@@ -1,0 +1,270 @@
+<script nonce="{{webnonce}}" src="{{asset "/logicHelper.js"}}" ></script>
+<script nonce="{{webnonce}}" type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script nonce="{{webnonce}}" type="text/javascript">
+google.charts.load('current', {packages: ['corechart', 'line']});
+google.charts.setOnLoadCallback(drawCurveTypes);
+
+function drawCurveTypes() {
+	  var inputData = '{{ reportdata.header.0.dataMap.json_payload }}'
+	  data = inputData.replace(/&quot;/g, '"')
+	  //console.log(data)
+	  var taskData = JSON.parse(data)
+	  var myJSONString = JSON.stringify(taskData);
+	  //console.log(taskData)
+	  var outPayload = []
+	  taskData.forEach(function (item, index) {
+		var payload = []
+		dataSplit = item['date'].split("-")
+		outDate = dataSplit[1] + "/" + dataSplit[2]
+		payload.push(outDate)
+		payload.push(item['data']['failed'])
+		payload.push(item['data']['successful'])
+		outPayload.push(payload)
+	  });
+	  console.log(outPayload)
+	  revsersePayload = outPayload.reverse()
+	  console.log(revsersePayload)
+      var data = new google.visualization.DataTable();
+	  data.addColumn('string', 'time')
+      data.addColumn('number', 'Failed');
+      data.addColumn('number', 'Successful');
+
+      data.addRows(revsersePayload);
+	  var interval
+	  test = revsersePayload.length
+	  console.log(test)
+		switch (test) {
+		case 8:
+			interval = 1;
+			break;
+		case 31:
+			interval = 5;
+			break;
+		case 61:
+			interval = 10;
+			break;
+		case 91:
+			interval = 10;
+			break;
+		}
+	  console.log(interval)
+
+      var options = {
+		'legend': { position: 'none' },
+        'height':400,
+        hAxis: {
+          title: 'Date',
+		  slantedText: false,
+		  showTextEvery: interval,
+		  titleTextStyle: { 
+			  bold: true,
+			  italic: false }
+		},
+        vAxis: {
+          title: 'Executions',
+		  //gridlines: {color: '#333', multiple: 5},
+		  titleTextStyle: { 
+			  bold: true,
+			  italic: false }
+        },
+		series: {
+            0: { color: '#C5221F' },
+            1: { color: '#188038' },
+        }
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+      chart.draw(data, options);
+    }
+</script>
+<div id="hypervisor-inventory-report">
+	<div class="intro-stats">
+	<h2>Overview - {{ reportdata.header.0.dataMap.timeDuration }} Days</h2>
+	<div id="chart_div"></div>
+	<div class="count-stats">
+		<div class="stats-container">
+			<span class="big-stat">{{ reportdata.header.0.dataMap.total_jobs }}</span>
+			<span class="stat-label">Total</span>
+		</div>
+		<div class="stats-container">
+			<span class="big-stat">{{ reportdata.header.0.dataMap.successful_jobs }}</span>
+			<div class="stat-label">Successful</div>
+		</div>
+		<div class="stats-container">
+			<span class="big-stat">{{ reportdata.header.0.dataMap.failed_jobs }}</span>
+			<div class="stat-label">Failed</div>
+		</div>
+		<div class="stats-container">
+			<span class="big-stat">{{ reportdata.header.0.dataMap.running_jobs }}</span>
+			<div class="stat-label">Running</div>
+		</div>
+		<div class="stats-container">
+			<span class="big-stat">{{ reportdata.header.0.dataMap.queued_jobs }}</span>
+			<div class="stat-label">Queued</div>
+		</div>
+	</div>
+	</div>
+	<h2>Job Executions</h2>
+	<div>
+	<div class="server-groups-data"><div class="server-groups-list remote-list list-container" id="server-groups-list " data-offset="0" data-max="25" data-sort="name" data-order="asc">
+			<table class="table server-groups-table remote-table striped advanced-table" data-columns="servergroup-status,servergroup-type,servergroup-name,servergroup-layout,servergroup-workers,servergroup-compute,servergroup-memory,servergroup-storage" data-filters="">
+				<thead>
+				<tr>	
+				<th class="" data-column-name="servergroup-status" data-column-sort="" draggable="true">
+					Status
+					<span class="row-actions pull-right" data-no-turbolink="">
+							<span class="drag glyphicon glyphicon-th-large"></span>
+					</span>
+				</th>
+				<th class="" data-column-name="servergroup-type" data-column-sort="" draggable="true">
+					Type
+					<span class="row-actions pull-right" data-no-turbolink="">
+							<span class="drag glyphicon glyphicon-th-large"></span>
+					</span>
+				</th>
+				<th class=" sort-column" data-column-name="servergroup-name" data-column-sort="name" draggable="true">
+					Name
+					<span class="row-actions pull-right" data-no-turbolink="">
+							<span class="drag glyphicon glyphicon-chevron-down sort-icon sort-level-0"></span>
+					</span>
+				</th>
+				<th class="" data-column-name="servergroup-layout" data-column-sort="" draggable="true">
+					User
+					<span class="row-actions pull-right" data-no-turbolink="">
+							<span class="drag glyphicon glyphicon-th-large"></span>
+					</span>
+				</th>
+				<th class="" data-column-name="servergroup-workers" data-column-sort="" draggable="true">
+				
+					Start Date
+				
+					<span class="row-actions pull-right" data-no-turbolink="">
+						
+						
+							<span class="drag glyphicon glyphicon-th-large"></span>
+						
+					</span>
+				</th>
+				<th class="" data-column-name="servergroup-compute" data-column-sort="" draggable="true">
+					End Date	
+					<span class="row-actions pull-right" data-no-turbolink="">
+					
+							<span class="drag glyphicon glyphicon-th-large"></span>	
+					</span>
+				</th>
+				<th class="" data-column-name="servergroup-memory" data-column-sort="" draggable="true">
+					Duration
+					<span class="row-actions pull-right" data-no-turbolink="">			
+							<span class="drag glyphicon glyphicon-th-large"></span>
+					</span>
+				</th>
+				<th class="" data-column-name="servergroup-memory" data-column-sort="" draggable="true">
+					Task Type
+					<span class="row-actions pull-right" data-no-turbolink="">			
+							<span class="drag glyphicon glyphicon-th-large"></span>
+					</span>
+				</th>
+				<th class="" data-column-name="servergroup-memory" data-column-sort="" draggable="true">
+					Information
+					<span class="row-actions pull-right" data-no-turbolink="">			
+							<span class="drag glyphicon glyphicon-th-large"></span>
+					</span>
+				</th>	
+				</tr>
+				</thead>
+				<tbody>
+			{{#each reportdata.main}}
+				<tr class="list-item">
+				{{#if dataMap.is_successful}}
+					<td class="status fake-center"><span class="statusIcon status-provisioned" title="ok"></span></td>
+				{{/if}}
+				{{#if dataMap.is_failed "error"}}
+					<td class="status fake-center"><span class="statusIcon status-failed" title="error"></span></td>
+				{{/if}}
+				{{#if dataMap.is_running "running"}}
+					<td class="status fake-center"><span class="statusIcon status-inprogress" title="syncing"></span></td>
+				{{/if}}
+				{{#if dataMap.is_queued "queued"}}
+					<td class="status fake-center"><span class="statusIcon status-inprogress" title="queued"></span></td>
+				{{/if}}
+				{{#if dataMap.isAnsibleTask}}
+					<td class="icon"><img src="/assets/containers-row-png/ansible@2x-e946347b26a3c4366fb844a36202f428.png" class="cloud-type-thumb cloud-type-thumb-md" title="Ansible Playbook" data-hidpi-src="/assets/containers-row-png/ansible@2x-e946347b26a3c4366fb844a36202f428.png" data-lowdpi-src="/assets/containers-row-png/ansible-e488f61cefa223236abd1b40af950439.png"></td>
+				{{/if}}
+				{{#if dataMap.isPythonTask}}
+					<td class="icon"><img src="/assets/containers-row-png/jython@2x-e69c85d24a8dbef4f32edf0b9eadc876.png" class="cloud-type-thumb cloud-type-thumb-md" title="Python Script" data-hidpi-src="/assets/containers-row-png/jython@2x-e69c85d24a8dbef4f32edf0b9eadc876.png" data-lowdpi-src="/assets/containers-row-png/jython-842a43046c24ba18f4d78088bce6105f.png"></td>
+				{{/if}}
+				{{#if dataMap.isShellScriptTask}}
+					<td class="icon"><img src="/assets/containers-row-png/script@2x-ac1de5dd151fab901c392248ceed4f85.png" class="cloud-type-thumb cloud-type-thumb-md" title="Shell Script" data-hidpi-src="/assets/containers-row-png/script@2x-ac1de5dd151fab901c392248ceed4f85.png" data-lowdpi-src="/assets/containers-row-png/script-501d006c699c8ffbb471e05e1b975005.png"></td>
+				{{/if}}
+				{{#if dataMap.isPowerShellTask}}
+					<td class="icon"><img src="/assets/containers-row-png/winrm@2x-2d211656e205b030f2127368151052e9.png"  class="cloud-type-thumb cloud-type-thumb-md" title="PowerShell Script" data-hidpi-src="/assets/containers-row-png/winrm@2x-2d211656e205b030f2127368151052e9.png" data-lowdpi-src="/assets/containers-row-png/winrm@2x-2d211656e205b030f2127368151052e9.png"></td>
+				{{/if}}
+				{{#if dataMap.isNotFoundTask}}
+					<td class="icon"><img src="/assets/containers-row-png/resource.png"  class="cloud-type-thumb cloud-type-thumb-md" title="Unknown Task" data-hidpi-src="/assets/containers-row-png/resource.png" data-lowdpi-src="/assets/containers-row-png/resource.png"></td>
+				{{/if}}
+					<td><a href="/library/tasks/{{dataMap.task_id}}">{{dataMap.name}}</a></td>
+					<td>{{dataMap.created_by}}</td>
+					<td>{{dataMap.start_date}}</td>
+					<td>{{dataMap.end_date}}</td>
+					<td>{{dataMap.duration}}</td>
+					<td>{{dataMap.automationType}}</td>
+					<td class="action-info">		
+										<a class="btn btn-sm btn-link btn-link-icon resource-info-modal-link" data-target="#resource-info-modal" data-toggle="modal" data-key="CloudTrail">
+											<span class="btn-icon btn-icon-info"></span>
+										</a>
+										<div class="resource-info-CloudTrail hidden">
+											<table>
+												<tbody>
+														<tr>
+															<td class="legend-cell"></td>
+															<td class="legend-title-cell">USW1-DataEventsRecorded</td>
+															<td class="number-cell">
+																$0.00
+															</td>
+														</tr>
+														<tr>
+															<td class="legend-cell"></td>
+															<td class="legend-title-cell">USW1-PaidEventsRecorded</td>
+															<td class="number-cell">
+																$0.00
+															</td>
+														</tr>
+												</tbody>
+											</table>
+										</div>
+								</td>
+				</tr>
+			{{/each}}			
+				</tbody>
+			</table>
+	</div>
+	<div class="morpheus-paging">
+	</div>
+	</div>
+	<!-- delete modal -->
+	</div>
+	<div class="modal fade" tabindex="-1" role="dialog" id="resource-info-modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true"><svg class="close-icon"><use xlink:href="/assets/icons.svg#close-window"></use></svg></span>
+					</button>
+					<h4 class="modal-title">Resource Detail</h4>
+				</div>
+				<div class="modal-body"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<style>
+.break-container {
+	margin-bottom: 0px;
+}
+.big-stat {
+
+}
+</style>
